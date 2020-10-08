@@ -7,12 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.util.List;
-
-import static java.util.Objects.nonNull;
 
 @Repository
 @Transactional
@@ -21,12 +16,9 @@ public class UserDAOImpl implements UserDAO {
     @Autowired
     private UserRepository userRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Override
-    public void createUser(User user) {
-        userRepository.save(user);
+    public User createUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
