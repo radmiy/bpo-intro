@@ -20,12 +20,9 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
-    private static final String NEW_STRING = "new";
     private static final String EDIT_STRING = "edit";
     private static final String USER_STRING = "user";
-    private static final String REFERER_STRING = "referer";
     private static final String SLASH_STRING = "/";
-    private static final String NEW_USER_VIEW = "new_user";
     private static final String EDIT_USER_VIEW = "edit_user";
     private static final String INDEX_VIEW = "index";
     private static final String REDIRECT = "redirect:";
@@ -45,21 +42,23 @@ public class UserController {
     @RequestMapping("/new")
     public ModelAndView newUser() {
         User user = new User();
-        ModelAndView modelAndView = new ModelAndView(NEW_USER_VIEW);
-        modelAndView.addObject(USER_STRING, user);
-        return modelAndView;
+        return getModelAndView(user);
     }
     
     @RequestMapping(path = "/edit/{userId}")
     public ModelAndView editUser(@PathVariable("userId") int id) {
-        ModelAndView modelAndView = new ModelAndView(EDIT_USER_VIEW);
         User user = userFacade.getUserById(id);
+        return getModelAndView(user);
+    }
+
+    private ModelAndView getModelAndView(User user) {
+        ModelAndView modelAndView = new ModelAndView(EDIT_USER_VIEW);
         modelAndView.addObject(USER_STRING, user);
         return modelAndView;
     }
 
     @PostMapping(path = "/save")
-    public ModelAndView updateUser(final HttpServletRequest request, @ModelAttribute(USER_STRING) @Validated User user, BindingResult bindingResult, Model model) {
+    public ModelAndView updateUser(@ModelAttribute(USER_STRING) @Validated User user, BindingResult bindingResult, Model model) {
         ModelAndView modelAndView = new ModelAndView(REDIRECT + SLASH_STRING, model.asMap());
         User existUser = userFacade.getUserBySecureNumber(user.getSecureNumber());
         if (existUser != null && !existUser.getId().equals(user.getId())) {
@@ -68,22 +67,6 @@ public class UserController {
         }
         if (bindingResult.hasErrors()) {
             modelAndView.setViewName(EDIT_USER_VIEW);
-        } else {
-            userFacade.createUser(user);
-        }
-        return modelAndView;
-    }
-
-    @PostMapping(path = "/add")
-    public ModelAndView addUser(final HttpServletRequest request, @ModelAttribute(USER_STRING) @Validated User user, BindingResult bindingResult, Model model) {
-        ModelAndView modelAndView = new ModelAndView(REDIRECT + SLASH_STRING, model.asMap());
-        User existUser = userFacade.getUserBySecureNumber(user.getSecureNumber());
-        if (existUser != null) {
-            bindingResult .rejectValue("secureNumber", "error.secureNumber", null,
-                            "There is already a user registered with the Secure Number provided");
-        }
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName(NEW_USER_VIEW);
         } else {
             userFacade.createUser(user);
         }
@@ -99,8 +82,8 @@ public class UserController {
     @RequestMapping("/search")
     public ModelAndView search(@RequestParam String keyword) {
         List<User> result = userFacade.search(keyword);
-        ModelAndView modelAndView = new ModelAndView("search");
-        modelAndView.addObject("result", result);
+        ModelAndView modelAndView = new ModelAndView(INDEX_VIEW);
+        modelAndView.addObject("users", result);
         return modelAndView;
     }
 }
