@@ -5,7 +5,7 @@ import com.intro.users.demo.models.User;
 import java.util.List;
 
 public interface UserDAO {
-    void createUser(User user);
+    User createUser(User user);
 
     void deleteUser(User user);
 

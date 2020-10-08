@@ -22,19 +22,13 @@ Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
             <th>Name</th>
             <th>Title</th>
             <th>Secure Number</th>
-            <th>Action</th>
         </tr>
         <c:forEach items="${users}" var="user">
             <tr>
-                <td>${user.id}</td>
+                <td><a href="/users/edit/${user.id}">${user.id}</a></td>
                 <td>${user.name}</td>
                 <td>${user.title}</td>
                 <td>${user.secureNumber}</td>
-                <td>
-                    <a href="/users/edit/${user.id}">Edit</a>
-
-                    <a href="/users/delete/${user.id}">Delete</a>
-                </td>
             </tr>
         </c:forEach>
     </table>
